@@ -23,8 +23,8 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
 // midlleware
-app.use(helmet());
 app.use(cookieParser());
+app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
