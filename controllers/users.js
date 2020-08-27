@@ -22,18 +22,24 @@ module.exports.getUser = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
 };
 
+// eslint-disable-next-line consistent-return
 module.exports.createUser = (req, res) => {
   const {
-    name, about, avatar, email,
+    name, about, avatar, email, password,
   } = req.body;
+  if (!name || !about || !avatar || !email || !password) {
+    return res.status(400).send({ message: 'Все поля обязательны к заполнению!' });
+  }
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400);
+      if (err.name === 'MongoError' && err.code === 11000) {
+        res.status(409).send({ message: 'Пользователь с таким E-mail уже существует.' });
+      } else if (err.name === 'ValidationError') {
+        res.status(400).send({ message: err.message });
       } else {
         res.status(500).send({ message: 'Внутренняя ошибка сервера' });
       }
@@ -46,7 +52,7 @@ module.exports.updateProfile = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400);
+        res.status(400).send({ message: err.message });
       } else {
         res.status(500).send({ message: 'Внутренняя ошибка сервера' });
       }
@@ -59,7 +65,7 @@ module.exports.updateAvatar = (req, res) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400);
+        res.status(400).send({ message: err.message });
       } else {
         res.status(500).send({ message: 'Внутренняя ошибка сервера' });
       }

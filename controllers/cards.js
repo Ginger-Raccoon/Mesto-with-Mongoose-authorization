@@ -14,7 +14,7 @@ module.exports.createCard = (req, res) => {
     .then((card) => res.send({ data: card }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400);
+        res.status(400).send({ message: err.message });
       } else {
         res.status(500).send({ message: 'Внутренняя ошибка сервера' });
       }
@@ -22,12 +22,14 @@ module.exports.createCard = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.id)
+  const { cardId } = req.params;
+  Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Ошибка id' });
+      } else {
+        res.send({ data: card });
       }
-      res.send({ data: card });
     })
     .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
 };
@@ -39,8 +41,9 @@ module.exports.likeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Ошибка id' });
+      } else {
+        res.send({ data: card });
       }
-      res.send({ data: card });
     })
     .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
 };
