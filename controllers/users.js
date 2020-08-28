@@ -19,7 +19,13 @@ module.exports.getUser = (req, res) => {
       }
       res.send(user);
     })
-    .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Нет пользователя с таким id' });
+      } else {
+        res.status(500).send({ message: 'Внутренняя ошибка сервера' });
+      }
+    });
 };
 
 // eslint-disable-next-line consistent-return
@@ -27,14 +33,16 @@ module.exports.createUser = (req, res) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
-  if (!name || !about || !avatar || !email || !password) {
-    return res.status(400).send({ message: 'Все поля обязательны к заполнению!' });
+  if (!password) {
+    return res.status(400).send({ message: 'Введите пароль' });
   }
   bcrypt.hash(req.body.password, 10)
     .then((hash) => User.create({
       name, about, avatar, email, password: hash,
     }))
-    .then((user) => res.send({ data: user }))
+    .then(() => res.send({
+      name, about, avatar, email,
+    }))
     .catch((err) => {
       if (err.name === 'MongoError' && err.code === 11000) {
         res.status(409).send({ message: 'Пользователь с таким E-mail уже существует.' });
@@ -74,7 +82,9 @@ module.exports.updateAvatar = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-
+  if (!password) {
+    return res.status(400).send({ message: 'Введите пароль' });
+  }
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const { NODE_ENV, JWT_SECRET } = process.env;

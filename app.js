@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const cookieParser = require('cookie-parser');
 const helmet = require('helmet');
 
 const mongoose = require('mongoose'); // импорт монгус
@@ -23,7 +22,6 @@ const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
 
 // midlleware
-app.use(cookieParser());
 app.use(helmet());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

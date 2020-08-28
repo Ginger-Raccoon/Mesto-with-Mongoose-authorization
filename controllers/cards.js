@@ -26,14 +26,14 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndRemove(cardId)
     .then((card) => {
       if (!card) {
-        res.status(404).send({ message: 'Ошибка id' });
+        res.status(404).send({ message: 'Карточка не найдена' });
       } else {
         res.send({ data: card });
       }
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Отсутсвует такая карточка' });
+        res.status(400).send({ message: 'Карточка не найдена' });
       } else {
         res.status(500).send({ message: 'Внутренняя ошибка сервера' });
       }
@@ -51,7 +51,13 @@ module.exports.likeCard = (req, res) => {
         res.send({ data: card });
       }
     })
-    .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Карточка не найдена' });
+      } else {
+        res.status(500).send({ message: 'Внутренняя ошибка сервера' });
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
@@ -61,8 +67,15 @@ module.exports.dislikeCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: 'Ошибка id' });
+      } else {
+        res.send({ data: card });
       }
-      res.send({ data: card });
     })
-    .catch(() => res.status(500).send({ message: 'Внутренняя ошибка сервера' }));
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Карточка не найдена' });
+      } else {
+        res.status(500).send({ message: 'Внутренняя ошибка сервера' });
+      }
+    });
 };
