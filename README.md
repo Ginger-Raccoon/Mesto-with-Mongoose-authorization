@@ -1,8 +1,6 @@
 Яндекс.Практикум Проектная работа 14 
 
-
 Цель проекта - отбработать навыки express.js полученные в ходе спринта, подключение Mongoose.
-
 
 ---
 
@@ -25,4 +23,6 @@
     PATCH /users/me — обновляет профиль
     PATCH /users/me/avatar — обновляет аватар
     PUT /cards/:cardId/likes — поставить лайк карточке
-    DELETE /cards/:cardId/likes — убрать лайк с карточки    
+    DELETE /cards/:cardId/likes — убрать лайк с карточки
+    POST /signin — логин
+    POST /signup — регистрация
